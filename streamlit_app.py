@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import dataset_report, intro
+from pages import dataset_report, intro, eda
 st.set_page_config(
     page_title = "Diabetes risk prediction App",
     layout="wide"
@@ -12,6 +12,7 @@ section = st.sidebar.radio(
     (
         "Introduction",
         "dataset report",
+        "EDA",
         "models",
         "demo",
         "Conclusions"
@@ -30,3 +31,5 @@ if section == "Introduction":
 if section == "dataset report":
     dataset_report.render()
 
+if section == "EDA":
+    eda.render()
