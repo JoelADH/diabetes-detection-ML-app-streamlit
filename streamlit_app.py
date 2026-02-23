@@ -1,5 +1,5 @@
 import streamlit as st
-from views import dataset_report, intro, eda
+from views import dataset_report, intro, eda, models
 st.set_page_config(
     page_title = "Diabetes risk prediction App",
     layout="wide"
@@ -33,3 +33,6 @@ if section == "dataset report":
 
 if section == "EDA":
     eda.render()
+
+if section == "models":
+    models.render()
