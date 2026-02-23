@@ -1,10 +1,5 @@
 import streamlit as st
-
-# st.title("🎈 My new app")
-# st.write(
-#     "Let's start building! For help and inspiration, head over to [docs.streamlit.io](https://docs.streamlit.io/)."
-# )
-
+from pages import intro
 st.set_page_config(
     page_title = "Diabetes risk prediction App",
     layout="wide"
@@ -29,4 +24,6 @@ st.sidebar.info(
     "diabetes risk based on BRFSS 2015 dataset"
 )
 
+if section == "Introduction":
+    intro.render()
 
