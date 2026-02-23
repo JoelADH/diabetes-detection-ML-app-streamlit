@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import dataset_report, intro, eda
+from views import dataset_report, intro, eda
 st.set_page_config(
     page_title = "Diabetes risk prediction App",
     layout="wide"
