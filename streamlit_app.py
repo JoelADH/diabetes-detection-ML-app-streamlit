@@ -8,7 +8,7 @@ st.set_page_config(
 st.sidebar.title("Navegación")
 
 section = st.sidebar.radio(
-    "Ir a:",
+    "Go to:",
     (
         "Introduction",
         "dataset report",

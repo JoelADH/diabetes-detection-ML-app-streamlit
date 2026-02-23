@@ -27,7 +27,7 @@ def render():
     labels=["non-Diabetic","Diabetic"]
     plt.pie(df["Diabetes_binary"].value_counts() , labels =labels ,autopct='%.02f' );
 
-    st.write("Proporción por clase:")
+    st.write("classes proportion:")
     st.write(df["Diabetes_binary"].value_counts(normalize=True))
 
     st.markdown("---")
