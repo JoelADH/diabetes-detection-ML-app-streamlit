@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import io
 
 DATA_PATH = "data/diabetes_binary_health_indicators_BRFSS2015.csv"
@@ -110,6 +108,8 @@ def render():
             """
     )
     st.write(df.describe().T)
+
+
 
 
 

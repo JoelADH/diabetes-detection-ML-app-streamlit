@@ -11,7 +11,7 @@ section = st.sidebar.radio(
     "Ir a:",
     (
         "Introduction",
-        "EDA",
+        "dataset report",
         "models",
         "demo",
         "Conclusions"
@@ -27,6 +27,6 @@ st.sidebar.info(
 if section == "Introduction":
     intro.render()
 
-if section == "EDA":
+if section == "dataset report":
     dataset_report.render()
 
