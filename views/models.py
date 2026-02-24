@@ -126,9 +126,12 @@ def render():
         st.subheader("Save Model for Deployment")
 
         if st.button("Save Best Model"):
-            joblib.dump(diagnostics[best_model_name]["model"], MODEL_OUT_PATH)
-            st.success(f"Model saved to: {MODEL_OUT_PATH}")
-            st.caption("This model will be used in the Demo section.")
+            st.session_state.best_model = diagnostics[best_model_name]["model"]
+            st.session_state.feature_columns = X_train.columns.tolist()
+            st.session_state.best_model_name = best_model_name
+
+            st.success("Model stored in session. Go to 'demo' in the sidebar to use it.")
+            st.caption("The model is kept in memory for the current app session.")
 
         
         if st.button("Reset Results"):
