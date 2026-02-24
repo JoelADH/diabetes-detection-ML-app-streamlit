@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -28,7 +30,14 @@ def render():
     st.title("Model training and evaluation")
 
     df = load_data()
-
+   
+    if "results_df" not in st.session_state:
+        st.session_state.results_df = None
+    if "diagnostics" not in st.session_state:
+        st.session_state.diagnostics = None
+    if "trained" not in st.session_state:
+        st.session_state.trained = False
+    
     st.subheader("Train/test split")
 
     test_size = st.slider("Test size proportion", 0.1, 0.4, 0.2, 0.05)
@@ -53,22 +62,29 @@ def render():
     )
 
     if st.button("Train and Evaluate Models"):
+        with st.spinner("Training models, please wait."):
+            models = train_models(X_train, y_train, balanced=use_balanced)
 
-        models = train_models(X_train, y_train, balanced=use_balanced)
+            results = []
+            diagnostics = {}
 
-        results = []
-        diagnostics = {}
+            for name, model in models.items():
+                metrics, cm, report = evaluate_model(
+                    model, X_train, y_train, X_test, y_test
+                )
 
-        for name, model in models.items():
-            metrics, cm, report = evaluate_model(
-                model, X_train, y_train, X_test, y_test
-            )
+                row = {"Model": name, **metrics}
+                results.append(row)
+                diagnostics[name] = {"model": model, "cm": cm, "report": report}
 
-            row = {"Model": name, **metrics}
-            results.append(row)
-            diagnostics[name] = {"model": model, "cm": cm, "report": report}
+            st.session_state.results_df = pd.DataFrame(results).set_index("Model")
+            st.session_state.diagnostics = diagnostics
+            st.session_state.trained = True
 
-        results_df = pd.DataFrame(results).set_index("Model")
+    if st.session_state.trained:
+
+        results_df = st.session_state.results_df
+        diagnostics = st.session_state.diagnostics
 
         st.subheader("Test Performance Comparison")
 
@@ -88,8 +104,8 @@ def render():
             index=0
         )
 
-        best = select_best_model(results_df.reset_index(), metric=metric_choice)
-        best_model_name = best["Model"]
+        best_row = results_df.sort_values(metric_choice, ascending=False).iloc[0]
+        best_model_name = best_row.name
 
         st.success(f"Best model according to {metric_choice}: {best_model_name}")
 
@@ -97,9 +113,12 @@ def render():
 
         st.write("Confusion Matrix (Test Set):")
         cm = diagnostics[best_model_name]["cm"]
-        st.write(pd.DataFrame(cm,
-                              index=["Actual 0", "Actual 1"],
-                              columns=["Predicted 0", "Predicted 1"]))
+        plot_confusion_matrix(cm)
+        # st.write(pd.DataFrame(
+        #     cm,
+        #     index=["Actual 0", "Actual 1"],
+        #     columns=["Predicted 0", "Predicted 1"]
+        # ))
 
         st.write("Classification Report:")
         st.code(diagnostics[best_model_name]["report"])
@@ -110,6 +129,12 @@ def render():
             joblib.dump(diagnostics[best_model_name]["model"], MODEL_OUT_PATH)
             st.success(f"Model saved to: {MODEL_OUT_PATH}")
             st.caption("This model will be used in the Demo section.")
+
+        
+        if st.button("Reset Results"):
+            st.session_state.results_df = None
+            st.session_state.diagnostics = None
+            st.session_state.trained = False
 
 
 def split_data(df, test_size=0.2, random_state=42):
@@ -190,3 +215,30 @@ def evaluate_model(model, X_train, y_train, X_test, y_test):
 
 def select_best_model(results_df, metric="f1_score"):
     return results_df.sort_values(by=metric, ascending=False).iloc[0]
+
+
+
+def plot_confusion_matrix(cm):
+    fig, ax = plt.subplots(figsize=(6, 5))
+
+    sns.heatmap(
+        cm,
+        annot=True,
+        fmt="d",
+        cmap="Blues",
+        cbar=False,
+        linewidths=0.5,
+        linecolor="gray",
+        ax=ax
+    )
+
+    ax.set_xlabel("Predicted Label")
+    ax.set_ylabel("Actual Label")
+    ax.set_title("Confusion Matrix")
+
+    ax.set_xticklabels(["No Diabetes", "Diabetes"])
+    ax.set_yticklabels(["No Diabetes", "Diabetes"], rotation=0)
+
+    plt.tight_layout()
+
+    st.pyplot(fig)
