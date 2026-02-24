@@ -5,16 +5,16 @@ st.set_page_config(
     layout="wide"
 )
 
-st.sidebar.title("Navegación")
+st.sidebar.title("Sections")
 
 section = st.sidebar.radio(
-    "Go to:",
+    "",
     (
         "Introduction",
-        "dataset report",
+        "Dataset report",
         "EDA",
-        "models",
-        "demo",
+        "Models",
+        "Demo",
         "Conclusions"
     )
 )
@@ -28,14 +28,14 @@ st.sidebar.info(
 if section == "Introduction":
     intro.render()
 
-if section == "dataset report":
+if section == "Dataset report":
     dataset_report.render()
 
 if section == "EDA":
     eda.render()
 
-if section == "models":
+if section == "Models":
     models.render()
 
-if section == "demo":
+if section == "Demo":
     demo.render()
